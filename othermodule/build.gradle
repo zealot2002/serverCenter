@@ -20,8 +20,8 @@ android {
                 arguments = [moduleName: project.getName()]
             }
         }
-    }
 
+    }
     buildTypes {
         release {
             minifyEnabled false
