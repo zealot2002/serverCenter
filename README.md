@@ -4,15 +4,18 @@
 
 用法：
 1，添加依赖
-Step 1
-        Add it in your root build.gradle at the end of repositories:
+
+
+
 	allprojects {
 		repositories {
 			...
 			maven { url 'https://jitpack.io' }
 		}
 	}
-Step 2. Add the dependency
+
+
+
 	dependencies {
 	        implementation 'com.github.zealot2002:serverCenter:0.1.0'
 	}
