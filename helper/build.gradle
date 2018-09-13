@@ -1,13 +1,16 @@
-apply plugin: 'com.android.application'
+apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 26
+
+
+
     defaultConfig {
-        applicationId "com.zzy.servercenter"
         minSdkVersion 19
         targetSdkVersion 26
         versionCode 1
         versionName "1.0"
+
         //SCM
         javaCompileOptions {
             annotationProcessorOptions {
@@ -15,24 +18,20 @@ android {
                 arguments = [moduleName: project.getName()]
             }
         }
+
     }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-//    compile files('libs/processors.jar')
+    compile project(':core')
 
-
-
-    implementation project(':core')
-    implementation project(':othermodule')
-    implementation project(':helper')
 }
-
-

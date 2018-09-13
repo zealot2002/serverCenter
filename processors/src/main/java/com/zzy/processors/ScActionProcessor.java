@@ -14,6 +14,8 @@ import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
+import javax.annotation.processing.SupportedAnnotationTypes;
+import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
@@ -24,22 +26,27 @@ import static javax.lang.model.element.Modifier.PUBLIC;
 /**
  *
  */
+@SupportedAnnotationTypes("com.zzy.annotations.ScActionAnnotation")
+@SupportedSourceVersion(SourceVersion.RELEASE_7)
 public class ScActionProcessor extends AbstractProcessor {
-
-
     private static final String KEY_MODULE_NAME = "moduleName";
     private Filer mFiler;
+    private Logger logger;
+
     @Override
     public synchronized void init(ProcessingEnvironment processingEnv) {
         super.init(processingEnv);
         mFiler = processingEnv.getFiler();
+        logger = new Logger(processingEnv.getMessager());
+        logger.info(">>> ScActionProcessor init. <<<");
     }
 
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+        logger.info(">>> ScActionProcessor process. <<<");
         test1(roundEnv);
-        return false;
+        return true;
     }
 
     private void test(RoundEnvironment roundEnv){
@@ -60,50 +67,6 @@ public class ScActionProcessor extends AbstractProcessor {
 
         String methodStatement = getMethodStatement(roundEnv);
         generateClassFile(packageName,className,methodStatement);
-//        StringBuilder builder = new StringBuilder()
-//                .append("package "+packageName+";\n\n")
-//                .append("public class "+className+" {\n\n") // open class
-//                .append("\tpublic String toString() {\n") // open method
-//                .append("\t\treturn \"");
-//
-//        Map<String ,String> actionMap = new HashMap<>();
-//        // for each javax.lang.model.element.Element annotated with the CustomAnnotation
-//        for (Element element : roundEnv.getElementsAnnotatedWith(ScActionAnnotation.class)) {
-//            TypeElement typeElement = (TypeElement) element;
-//            String actionName = typeElement.getAnnotation(ScActionAnnotation.class).value();
-//            String clazzName = typeElement.getQualifiedName().toString();
-//            actionMap.put(actionName,clazzName);
-//        }
-//
-//        // this is appending to the return statement
-//        builder.append(actionMap.toString());
-//
-//        builder.append("\";\n") // end return
-//                .append("\t}\n") // close method
-//                .append("}\n"); // close class
-//
-//        try { // write the file
-//
-//            JavaFileObject source = processingEnv.getFiler().createSourceFile(packageName+"."+className);
-////
-////            JavaFile.builder(PACKAGE_OF_GENERATE_FILE,
-////                    TypeSpec.classBuilder(providerMapFileName)
-////                            .addJavadoc(WARNING_TIPS)
-////                            .addSuperinterface(ClassName.get(type_IProviderGroup))
-////                            .addModifiers(PUBLIC)
-////                            .addMethod(loadIntoMethodOfProviderBuilder.build())
-////                            .build()
-////            ).build().writeTo(mFiler);
-//
-//            Writer writer = source.openWriter();
-//            writer.write(builder.toString());
-//            writer.flush();
-//            writer.close();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            // Note: calling e.printStackTrace() will print IO errors
-//            // that occur from the file already existing after its first run, this is normal
-//        }
     }
 
     private String getMethodStatement(RoundEnvironment roundEnv) {
@@ -116,6 +79,7 @@ public class ScActionProcessor extends AbstractProcessor {
             TypeElement typeElement = (TypeElement) element;
             String actionName = typeElement.getAnnotation(ScActionAnnotation.class).value();
             String clazzName = typeElement.getQualifiedName().toString();
+            logger.info(">>> found action :"+actionName+" in class :"+clazzName);
             actionMap.put(actionName,clazzName);
         }
 

@@ -11,6 +11,7 @@
             <option value="$PROJECT_DIR$/annotations" />
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/core" />
+            <option value="$PROJECT_DIR$/helper" />
             <option value="$PROJECT_DIR$/othermodule" />
             <option value="$PROJECT_DIR$/processors" />
           </set>

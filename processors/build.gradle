@@ -8,3 +8,31 @@ dependencies {
 
 sourceCompatibility = "1.7"
 targetCompatibility = "1.7"
+
+task makeJar(type:org.gradle.api.tasks.bundling.Jar) {
+    println "makeJar----------------------------------------------------------start"
+    //指定生成的jar名
+    baseName 'smarter'
+    //从哪里打包class文件
+    from('build/resources')
+    //打包到jar后的目录结构
+    into('build/libs/')
+    //去掉不需要打包的目录和文件
+    exclude('BuildConfig.class', 'R.class')
+    //去掉R$开头的文件
+    exclude { it.name.startsWith('R$'); }
+    //此段代码将相关信息写到META-INF文件中的MANEFEST.MF文件
+    manifest {
+        attributes(
+                'Implementation-Title': "${project.name}",
+                //'Implementation-Version': "${version}",
+                'Implementation-Version': "2.0",
+                'Built-Date': new Date().getDateTimeString(),
+                'Built-With':
+                        "gradle-${project.getGradle().getGradleVersion()},groovy-${GroovySystem.getVersion()}",
+                'Created-By':
+                        'Java ' + System.getProperty('java.version') + ' (' + System.getProperty('java.vendor') + ')')
+    }
+    println "makeJar----------------------------------------------------------end"
+}
+makeJar.dependsOn(build)
