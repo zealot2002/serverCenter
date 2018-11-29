@@ -28,8 +28,6 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 //    compile files('libs/processors.jar')
 
-
-
     implementation project(':core')
     implementation project(':othermodule')
     implementation project(':helper')

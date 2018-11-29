@@ -4,6 +4,7 @@ import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
 import com.zzy.annotations.ScActionAnnotation;
+import com.zzy.annotations.ScModuleInitAnnotation;
 
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -26,12 +27,11 @@ import static javax.lang.model.element.Modifier.PUBLIC;
 /**
  *
  */
-@SupportedAnnotationTypes("com.zzy.annotations.ScActionAnnotation")
+@SupportedAnnotationTypes("com.zzy.annotations.ScModuleInitAnnotation")
 @SupportedSourceVersion(SourceVersion.RELEASE_7)
-public class ScActionProcessor extends AbstractProcessor {
+public class ScModuleInitProcessor extends AbstractProcessor {
     private static final String KEY_MODULE_NAME = "moduleName";
-    private static final String SC_ACTION_ROOT_PACKAGE = "com.zzy.processor.generated.scAction";
-
+    private static final String SC_MODULE_INIT_ROOT_PACKAGE = "com.zzy.processor.generated.moduleInit";
     private Filer mFiler;
     private Logger logger;
 
@@ -45,47 +45,30 @@ public class ScActionProcessor extends AbstractProcessor {
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-        test1(roundEnv);
+        test(roundEnv);
         return true;
     }
 
     private void test(RoundEnvironment roundEnv){
-        for (Element element : roundEnv.getElementsAnnotatedWith(ScActionAnnotation.class)) {
-            System.out.println("------------------------------");
-            if (element.getKind() == ElementKind.CLASS) {
-                TypeElement typeElement = (TypeElement) element;
-                System.out.println(typeElement.getSimpleName());
-                System.out.println(typeElement.getAnnotation(ScActionAnnotation.class).value());
-            }
-            System.out.println("------------------------------");
-        }
-    }
-    private void test1(RoundEnvironment roundEnv){
         String moduleName = getModuleName(roundEnv);
         String className = getGeneratedClassName(moduleName);
 
         String methodStatement = getMethodStatement(roundEnv);
-        generateClassFile(SC_ACTION_ROOT_PACKAGE,className,methodStatement);
+        generateClassFile(SC_MODULE_INIT_ROOT_PACKAGE,className,methodStatement);
     }
 
     private String getMethodStatement(RoundEnvironment roundEnv) {
         StringBuilder builder = new StringBuilder()
                 .append("return \"");
 
-        Map<String ,String> actionMap = new HashMap<>();
         // for each javax.lang.model.element.Element annotated with the CustomAnnotation
-        for (Element element : roundEnv.getElementsAnnotatedWith(ScActionAnnotation.class)) {
+        for (Element element : roundEnv.getElementsAnnotatedWith(ScModuleInitAnnotation.class)) {
             TypeElement typeElement = (TypeElement) element;
-            String actionName = typeElement.getAnnotation(ScActionAnnotation.class).value();
             String clazzName = typeElement.getQualifiedName().toString();
-            logger.info(">>> found action :"+actionName+" in class :"+clazzName);
-            actionMap.put(actionName,clazzName);
+            logger.info(">>> found moduleInit in class :"+clazzName);
+            builder.append(clazzName);
+            builder.append("\"");
         }
-
-        // this is appending to the return statement
-        builder.append(actionMap.toString());
-
-        builder.append("\"");
         return builder.toString();
     }
 
@@ -111,7 +94,7 @@ public class ScActionProcessor extends AbstractProcessor {
 
     }
     private String getGeneratedClassName(String moduleName) {
-        return moduleName+"GeneratedActionMap";
+        return moduleName+"GeneratedModuleInit";
     }
 
     private String getModuleName(RoundEnvironment roundEnv){
@@ -128,7 +111,7 @@ public class ScActionProcessor extends AbstractProcessor {
     @Override
     public Set<String> getSupportedAnnotationTypes() {
         Set<String> annotataions = new LinkedHashSet<String>();
-        annotataions.add(ScActionAnnotation.class.getCanonicalName());
+        annotataions.add(ScModuleInitAnnotation.class.getCanonicalName());
         return annotataions;
     }
 

@@ -12,7 +12,7 @@ targetCompatibility = "1.7"
 task makeJar(type:org.gradle.api.tasks.bundling.Jar) {
     println "makeJar----------------------------------------------------------start"
     //指定生成的jar名
-    baseName 'smarter'
+    baseName 'processors'
     //从哪里打包class文件
     from('build/resources')
     //打包到jar后的目录结构

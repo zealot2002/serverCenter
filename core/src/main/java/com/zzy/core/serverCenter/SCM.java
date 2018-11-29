@@ -1,5 +1,6 @@
 package com.zzy.core.serverCenter;
 
+import android.app.Application;
 import android.content.Context;
 
 import com.zzy.core.utils.ClassUtils;
@@ -18,7 +19,8 @@ import java.util.Map;
 
 public class SCM {
     private static final String TAG = "SCM";
-    private static final String SCACTION_ROOT_PAKCAGE = "com.zzy.processor.generated";
+    private static final String SC_ACTION_ROOT_PACKAGE = "com.zzy.processor.generated.scAction";
+    private static final String SC_MODULE_INIT_ROOT_PACKAGE = "com.zzy.processor.generated.moduleInit";
 
     private static final SCM ourInstance = new SCM();
     public static SCM getInstance() {
@@ -34,11 +36,11 @@ public class SCM {
 
     /**
      * scm init
-     * @param context
+     * @param application
      */
-    public void init(Context context){
+    public void init(Application application){
         try {
-            List<String> classFileNames = ClassUtils.getFileNameByPackageName(context, SCACTION_ROOT_PAKCAGE);
+            List<String> classFileNames = ClassUtils.getFileNameByPackageName(application, SC_ACTION_ROOT_PACKAGE);
             for (String className : classFileNames) {
                 String s = Class.forName(className).newInstance().toString();
                 Map<String,String> map = StringUtils.mapStringToMap(s);
@@ -48,9 +50,29 @@ public class SCM {
                 }
             }
             isReady = true;
+            initModules(application);
         } catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+    private void initModules(Application application) {
+        try {
+            List<String> classFileNames = ClassUtils.getFileNameByPackageName(application, SC_MODULE_INIT_ROOT_PACKAGE);
+            for (String className : classFileNames) {
+                String s = Class.forName(className).newInstance().toString();
+                Class clazz = Class.forName(s);
+                ScModuleInit scModuleInit = (ScModuleInit) clazz.newInstance();
+                scModuleInit.invoke(application);
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+
+    public void req(Context context,String action) throws Exception{
+        req(context,action,null,null);
     }
 
     public void req(Context context,String action,ScCallback callback) throws Exception{
